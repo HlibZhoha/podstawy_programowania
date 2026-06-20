@@ -82,6 +82,67 @@ dataTime; steps; synced
 1562005800;86;0`
 
 
+zadanie 6
+Część 1 — pl-7.2.json5 (dublowanie linii)
+{
+  head -n 1 en-7.2.json5
+  sed -n '2,$p' en-7.2.json5 | sed '$d' | while read -r linia; do
+      echo "// $linia"
+      echo "$linia"
+  done
+  tail -n 1 en-7.2.json5
+} > pl-7.2.json5
+
+`head`/`tail` zostawiają nawiasy `{ }` bez zmian, środek pliku idzie do
+pętli `while`, która dubluje każdą linię (raz jako komentarz, raz normalnie).
+
+czesc 2 
+Krok 1** – nowe linie do pliku pomocniczego `nowe.txt`
+
+sed -n '2,$p' en-7.4.json5 | sed '$d' | while read -r linia; do
+    klucz=$(echo "$linia" | cut -d\" -f2)
+    if ! grep -q "\"$klucz\"" en-7.2.json5; then
+        echo "$linia"
+    fi
+done > nowe.txt
+czesc 3
+dublowanie `nowe.txt` z komentarzem:
+```bash
+{
+  echo "{"
+  while read -r linia; do
+      echo "// $linia"
+      echo "$linia"
+  done < nowe.txt
+  echo "}"
+} > pl-7.4.json5
+```
+
+
+zadanie 7
+czesc 1 recznie rozpakowalem archiwum przez 7-zip
+czesc 2  konwersja (JPG, wysokość 720px, DPI 96x96)
+find kopie-1 kopie-2 -type f \( -iname "*.png" -o -iname "*.jpg" \) | while read -r plik; do
+    nowy="${plik%.*}.jpg"
+    magick "$plik" -resize x720 -density 96x96 -units PixelsPerInch "$nowy"
+    if [ "$plik" != "$nowy" ]; then
+        rm "$plik"
+    fi
+done
+
+czesc 3 spakowanie do jednego ZIP-a
+zip -r zdjecia-gotowe.zip kopie-1 kopie-2
+
+Zadanie 8 — generowanie PDF z portfolio zdjęć
+Komenda 1 — lista plików
+find kopie-1 kopie-2 -type f -iname "*.jpg" | sort > lista.txt
+
+Sprawdzenie zawartości lista.txt
+nano lista.txt
+
+Komenda 2 — budowa PDF-a
+mapfile -t pliki < lista.txt
+montage -label '%f' "${pliki[@]}" -tile 2x4 -geometry 300x300+10+40 -page a4 portfolio.pdf
 
 
 
