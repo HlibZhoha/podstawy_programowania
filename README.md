@@ -1,4 +1,4 @@
-# podstawy_programowania
+# Podstawy_programowania
 # WZIMK Lo3
 
 Repozytorium z zadaniami projektowymi z przedmiotu Podstawy Programowania.
