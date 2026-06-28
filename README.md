@@ -89,7 +89,7 @@ md5sum lista.txt lista-pop.txt
 dos2unix steps-2sql.csv steps-2csv.sql
 ```
 
-## CSV → SQL
+## Z CSV do SQL
 ```bash
 awk -F';' 'NR > 1 {print "INSERT INTO stepsData (time, intensity, steps) VALUES (" $1 ", " $2 ", " $3 ");"}' steps-2sql.csv > steps-2sql.sql
 ```
@@ -99,7 +99,7 @@ awk -F';' 'NR > 1 {print "INSERT INTO stepsData (time, intensity, steps) VALUES 
 - `NR > 1` – pomija nagłówek (pierwszą linię)
 - `$1`, `$2`, `$3` – kolumny: czas, intensywność, kroki
 
-## SQL → CSV (bez 3 zer z daty)
+## Z SQL do CSV (bez 3 zer z daty)
 ```bash
 echo "dataTime; steps; synced" > steps2csv.csv
 sed -E 's/.*VALUES \(([0-9]+)000, *([0-9]+), *([0-9]+)\);/\1;\2;\3/' steps-2csv.sql >> steps2csv.csv
