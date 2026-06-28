@@ -1,148 +1,76 @@
 # podstawy_programowania
-WZIMK Lo3
+# WZIMK Lo3
 
-zadanie 3 Niesforne dane
-Opis postępowania:
-1 przejscie do mojego ktalogu z zipem `$ cd /G/projekt_podstawy_programowania`;
-
-2. Rozpakowano archiwum z danymi przy użyciu narzędzia `unzip`:
-   `$ unzip dane.zip`
-3. Przekonwertowano znaki końca linii z formatu Windows (CRLF) na format Linux (LF):
-`   $ dos2unix dane.txt
-dos2unix: converting file dane.txt to Unix format...`
-4.Zamiana jednej kolumny na trzy kolumny
-Program paste z trzema myślnikami. Myślniki oznaczają: "weź linię 1, linię 2, linię 3 i sklej je obok siebie, potem weź linię 4, 5, 6 i zrób to samo". Wynik zapiszemy do tymczasowego pliku kolumny.txt
-Znaczek < dane.txt mówi konsoli: "Weź ten plik i nakarm nim program".
-
-Wtedy trzy myślniki - - - mogą pobrać z tego pliku po trzy linijki na raz i ładnie ułożyć je w kolumny.
-`$ paste - - - < dane.txt > Kolumny.txt`
-5. sprawdaz wynik działania przez `nano Kolumny.txt `
-
-6. Wygenerowanie nagłówek kolumn x y z z separatorami tabulacji, w nowym pliku
-   `$ echo -e "x\ty\tz" > naglowki.txt`
-7. Połączenie nagłówki.txt z przetworzonymi danymi kolumny.txt za pomocą cat:
-`cat naglowek.txt kolumny.txt > zad3.txt`
-8. sprawdzenie rezultatu `nano zad3.txt`
-
-zadanie 4 Dodawanie poprawek 
-1. pobranie plikow lista-pop.txt  lista.txt
-2. `GlibZ@Aboba UCRT64 /G/projekt_podstawy_programowania/zad4
-$ ls
-lista-pop.txt  lista.txt  lista.zip`
-3. Przekonwertowano znaki końca linii z formatu Windows (CRLF) na format Linux (LF):
-   `$ dos2unix lista.txt lista-pop.txt
-dos2unix: converting file lista.txt to Unix format...
-dos2unix: converting file lista-pop.txt to Unix format...`
-4.Teraz stworzymy plik, który zawiera tylko informacje o tym, czym te dwie listy się różnią
-`$ diff -u lista.txt lista-pop.txt > lista.patch`
-tworzy sie plik typu .path
-
-5.Sprawdź sumy kontrolne (Przed naprawą)
-Teraz sprawdzimy unikalne "odciski palca" obu plików za pomocą algorytmu MD5
-`$ md5sum lista.txt lista-pop.txt`
-
-6.Nałóż łatkę na oryginalny plik
-Teraz zrobimy magię – użyjemy pliku .patch, żeby automatycznie naprawić stary plik lista.txt
-`$ patch lista.txt < lista.patch
-patching file lista.txt`
-
- 7.Wielka weryfikacja (Po naprawie)
-Skoro plik lista.txt został zaktualizowany, teraz powinien być dokładnie taki sam jak lista-pop.txt. Sprawdźmy to ponownie sumami MD5
-`$ md5sum lista.txt lista-pop.txt
-683c1c85343c7337adfb13acb7598237 *lista.txt
-683c1c85343c7337adfb13acb7598237 *lista-pop.txt
-`Sukces jest wtedy, kiedy oba długie ciągi znaków na ekranie są teraz IDENTYCZNE
+Repozytorium z zadaniami projektowymi z przedmiotu Podstawy Programowania.
+Środowisko: MSYS2 (UCRT64) na Windows
 
 
-zadanie 5 Z CSV do SQL i z powrotem
-1.Standardowo zaczynamy od wyciągnięcia plików i ujednolicenia końcówek linii, żeby narzędzia Linuxowe się nie pogniewały
-`$ dos2unix steps-2sql.csv steps-2csv.sql`
-2.Musimy przerobić plik, gdzie dane są oddzielone średnikami, na serię zapytań bazodanowych INSERT INTO. Użyjemy do tego programu awk, który potrafi przetwarzać pliki linia po linii i dzielić je na kolumny.
-`$ awk -F';' 'NR > 1 {print "INSERT INTO stepsData (time, intensity, steps) VALUES (" $1 ", " $2 ", " $3 ");"}' steps-2sql.csv > steps-2sql.sql`
-
-3. sprawdzam wynik działania
-`$ head -n 3 steps-2sql.sql
-INSERT INTO stepsData (time, intensity, steps) VALUES (1562001120, 19, 0);
-INSERT INTO stepsData (time, intensity, steps) VALUES (1562001180, 23, 0);
-INSERT INTO stepsData (time, intensity, steps) VALUES (1562001240, 13, 0);`
-
-4.Z SQL do CSV z ucinaniem trzech ostanich zer z daty (Praca z sed) 
-
-5.nowy plik CSV z wymaganym nagłówkiem
-`$ echo "dataTime; steps; synced" > steps2csv.csv`
-
-6.Wyciągnij dane i utnij zera za pomocą sed
-`$ sed -E 's/.*VALUES \(([0-9]+)000, *([0-9]+), *([0-9]+)\);/\1;\2;\3/' steps-2csv.sql >> steps2csv.csv`
-
-7.Sprawdźmy, czy Twój nowy plik CSV wygląda dokładnie tak jak trzeba
-`$ head -n 4 steps2csv.csv
-dataTime; steps; synced
-1562004600;41;0
-1562005200;65;0
-1562005800;86;0`
-
-
-zadanie 6
-Część 1 — pl-7.2.json5 (dublowanie linii)
-{
-  head -n 1 en-7.2.json5
-  sed -n '2,$p' en-7.2.json5 | sed '$d' | while read -r linia; do
-      echo "// $linia"
-      echo "$linia"
-  done
-  tail -n 1 en-7.2.json5
-} > pl-7.2.json5
-
-`head`/`tail` zostawiają nawiasy `{ }` bez zmian, środek pliku idzie do
-pętli `while`, która dubluje każdą linię (raz jako komentarz, raz normalnie).
-
-czesc 2 
-Krok 1** – nowe linie do pliku pomocniczego `nowe.txt`
-
-sed -n '2,$p' en-7.4.json5 | sed '$d' | while read -r linia; do
-    klucz=$(echo "$linia" | cut -d\" -f2)
-    if ! grep -q "\"$klucz\"" en-7.2.json5; then
-        echo "$linia"
-    fi
-done > nowe.txt
-czesc 3
-dublowanie `nowe.txt` z komentarzem:
+# Zadanie 2 - Instalacja MSYS2
+Zainstalowano MSYS2 z oficjalnej strony, miejsce docelowe: dysk `G:\msys2`.
+## Aktualizacja systemu
 ```bash
-{
-  echo "{"
-  while read -r linia; do
-      echo "// $linia"
-      echo "$linia"
-  done < nowe.txt
-  echo "}"
-} > pl-7.4.json5
+pacman -Syu
+```
+
+- `-S` – synchronizuj/instaluj
+- `-y` – odświezanie listy dostępnych pakietów
+- `-u` – aktualizacja już zainstalowanych pakietów
+
+  ## Instalacja potrzebnych narzędzi
+```bash
+pacman -S vim nano less diffutils zip unzip dos2unix patch mingw-w64-ucrt-x86_64-imagemagick
+```
+
+- `-S` – instalacja pakietów wymienionych po -S
+
+# Zadanie 3 – Niesforne dane 
+## Rozpakowanie i konwersja końców linii
+```bash
+cd /G/projekt_podstawy_programowania
+unzip dane.zip
+dos2unix dane.txt
+```
+
+## Zamiana jednej kolumny na trzy
+```bash
+paste - - - < dane.txt > Kolumny.txt
+```
+
+Program `paste` z trzema myślnikami bierze po trzy kolejne wiersze i skleja je
+obok siebie w jeden wiersz. `< dane.txt` wskazuje plik źródłowy.
+  
+## Nagłówek i połączenie z danymi
+```bash
+echo -e "x\ty\tz" > naglowki.txt
+cat naglowki.txt Kolumny.txt > zad3.txt
+```
+
+- `echo -e` – wypisuje tekst, `-e` interpretuje `\t` jako tabulator
+- `cat` – łączy pliki jeden za drugim (najpierw `naglowki.txt`, potem `Kolumny.txt`)
+
+## Sprawdzenie wyniku
+```bash
+head -n 5 zad3.txt
 ```
 
 
-zadanie 7
-czesc 1 recznie rozpakowalem archiwum przez 7-zip
-czesc 2  konwersja (JPG, wysokość 720px, DPI 96x96)
-find kopie-1 kopie-2 -type f \( -iname "*.png" -o -iname "*.jpg" \) | while read -r plik; do
-    nowy="${plik%.*}.jpg"
-    magick "$plik" -resize x720 -density 96x96 -units PixelsPerInch "$nowy"
-    if [ "$plik" != "$nowy" ]; then
-        rm "$plik"
-    fi
-done
 
-czesc 3 spakowanie do jednego ZIP-a
-zip -r zdjecia-gotowe.zip kopie-1 kopie-2
 
-Zadanie 8 — generowanie PDF z portfolio zdjęć
-Komenda 1 — lista plików
-find kopie-1 kopie-2 -type f -iname "*.jpg" | sort > lista.txt
 
-Sprawdzenie zawartości lista.txt
-nano lista.txt
 
-Komenda 2 — budowa PDF-a
-mapfile -t pliki < lista.txt
-montage -label '%f' "${pliki[@]}" -tile 2x4 -geometry 300x300+10+40 -page a4 portfolio.pdf
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
