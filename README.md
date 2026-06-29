@@ -204,3 +204,37 @@ montage -label '%f' "${pliki[@]}" -tile 2x4 -geometry 300x300+10+40 -page a4 por
 - `-page a4` – strona PDF w formacie A4
 
 Wynik: `portfolio.pdf` ze wszystkimi zdjęciami, po 8 na stronę, z podpisami nazw plików.
+
+# Zadanie 9 – Porządki w kopiach zapasowych
+Skrypt: [`zad9.sh`](zad9.sh)
+
+## Skrypt
+
+```bash
+#!/usr/bin/env bash
+cd kopie
+for plik in *.zip; do
+    rok="${plik:0:4}"
+    miesiac="${plik:5:2}"
+    mkdir -p "$rok/$miesiac"
+    mv "$plik" "$rok/$miesiac/"
+done
+```
+
+- `for plik in *.zip` – pętla po każdym pliku `.zip` w katalogu
+- `${plik:0:4}` – wycina 4 pierwsze znaki nazwy pliku (rok)
+- `${plik:5:2}` – wycina 2 znaki od pozycji 5 (miesiąc)
+- `mkdir -p` – tworzy katalog `rok/miesiąc
+- `mv` – przenosi plik do nowego katalogu
+
+## Uruchomienie
+
+```bash
+bash zad9.sh
+```
+
+## Sprawdzenie wyniku
+
+```bash
+find kopie | sort
+```
